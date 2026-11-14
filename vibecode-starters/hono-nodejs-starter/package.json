@@ -1,0 +1,14 @@
+{
+  "name": "hono-starter",
+  "version": "1.0.0",
+  "description": "Hono.js starter template",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "hono": "^4.5.6",
+    "@hono/node-server": "^1.12.0"
+  }
+}
