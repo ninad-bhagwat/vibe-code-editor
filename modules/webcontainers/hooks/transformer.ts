@@ -1,10 +1,4 @@
-interface TemplateItem {
-  filename: string;
-  fileExtension: string;
-  content: string;
-  folderName?: string;
-  items?: TemplateItem[];
-}
+import { TemplateFile, TemplateFolder } from "@/modules/playground/lib/path-to-json";
 
 interface WebContainerFile {
   file: {
@@ -23,6 +17,15 @@ type WebContainerFileSystem = Record<
   WebContainerFile | WebContainerDirectory
 >;
 
+type TemplateItem = TemplateFile | TemplateFolder;
+
+/**
+ * Type guard to check if an item is a folder
+ */
+function isFolder(item: TemplateItem): item is TemplateFolder {
+  return "folderName" in item && "items" in item;
+}
+
 /**
  * Derives the filesystem key for an item:
  *   - directory  →  folderName          (e.g. "src")
@@ -33,7 +36,7 @@ type WebContainerFileSystem = Record<
  * so the key correctly becomes "package.json" — no special casing needed.
  */
 function getItemKey(item: TemplateItem): string {
-  if (item.folderName && item.items !== undefined) {
+  if (isFolder(item)) {
     // directory
     return item.folderName;
   }
@@ -46,7 +49,7 @@ function getItemKey(item: TemplateItem): string {
 function processItem(
   item: TemplateItem
 ): WebContainerFile | WebContainerDirectory {
-  if (item.folderName && item.items !== undefined) {
+  if (isFolder(item)) {
     // directory
     const directoryContents: WebContainerFileSystem = {};
 
@@ -68,10 +71,7 @@ function processItem(
   };
 }
 
-export function transformToWebContainerFormat(template: {
-  folderName: string;
-  items: TemplateItem[];
-}): WebContainerFileSystem {
+export function transformToWebContainerFormat(template: TemplateFolder): WebContainerFileSystem {
   const result: WebContainerFileSystem = {};
 
   for (const item of template.items) {
