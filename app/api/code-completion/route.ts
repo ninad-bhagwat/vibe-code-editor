@@ -58,10 +58,11 @@ export async function POST(request: NextRequest) {
         generatedAt: new Date().toISOString(),
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Context analysis error:", error);
     return NextResponse.json(
-      { error: "Internal server error", message: error.message },
+      { error: "Internal server error", message: errorMessage },
       { status: 500 }
     );
   }
